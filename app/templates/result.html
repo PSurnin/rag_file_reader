@@ -1,0 +1,30 @@
+<!-- templates/result.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Summary Result</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Document Summary</h1>
+        
+        <div class="summary-content">
+            <h2>Summary:</h2>
+            <div class="summary-text">{{ summary }}</div>
+        </div>
+
+        <div class="model-info">
+            Model: {{ model_name }}
+        </div>
+
+        <div class="actions">
+            <form action="/" method="post" style="display: inline;">
+                <input type="hidden" name="action" value="regenerate">
+                <button type="submit" class="btn">Regenerate Summary</button>
+            </form>
+            <a href="/" class="btn">Upload Another Document</a>
+        </div>
+    </div>
+</body>
+</html>
