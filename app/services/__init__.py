@@ -1,6 +1,8 @@
 from typing import Dict, Optional
 from .processor import DocumentProcessor
 
+# TODO: doc/docx support
+
 
 class ProcessorRegistry:
     """Реестр обработчиков документов"""
@@ -13,12 +15,12 @@ class ProcessorRegistry:
         """Инициализация всех обработчиков"""
         from .pdf_processor import PDFProcessor
         from .txt_processor import TXTProcessor
-        from .doc_processor import DOCProcessor
+        #from .doc_processor import DOCProcessor
 
         processors = [
             PDFProcessor(),
             TXTProcessor(),
-            DOCProcessor(),
+            #DOCProcessor(),
         ]
 
         for processor in processors:

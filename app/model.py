@@ -6,6 +6,9 @@ import gc
 
 from .logger import log
 
+# TODO: Настройка параметров генерации - длина ответа и стиль
+# TODO: RAG + FAISS
+
 
 class ModelManager:
     def __init__(self, model_name: str = "HuggingFaceTB/SmolLM3-3B"):

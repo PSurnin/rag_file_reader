@@ -18,6 +18,9 @@ async def upload_form(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 
+# TODO: Кэширование запросов для повторных запросов
+# TODO: Чат по итогу анализа, возвращаешь суммирование, но можно задать вопросы (после RAG)
+
 @router.post("/")
 async def summarize(
     request: Request,
@@ -55,7 +58,7 @@ async def summarize(
         return templates.TemplateResponse("result.html", {
             "request": request,
             "summary": summary,
-            "model_name": "HuggingFaceTB/SmolLM3-3B"    # взять из model_manager
+            "model_name": model_manager.model_name    # взять из model_manager
         })
     except Exception as e:
         log.error(f"Ошибка: {str(e)}", exc_info=True)

@@ -4,6 +4,8 @@ import tempfile
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
 
+# WORK IN PROGRESS
+
 
 class DOCProcessor(DocumentProcessor):
     """Обработчик DOC/DOCX файлов"""

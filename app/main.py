@@ -8,6 +8,7 @@ from .routes import web
 from .model import model_manager
 from .logger import log
 
+# TODO: Redis + FAISS + Docker deploy
 
 BASE_DIR = Path(__file__).parent
 

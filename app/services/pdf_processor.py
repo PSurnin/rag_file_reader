@@ -2,7 +2,6 @@ from .processor import DocumentProcessor
 from fastapi import UploadFile, HTTPException
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
-import tempfile
 from pypdf import PdfReader
 from io import BytesIO
 
