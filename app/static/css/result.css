@@ -1,0 +1,13 @@
+.summary-text {
+    line-height: 1.6;
+    white-space: pre-wrap;
+    font-size: 1.1em;
+}
+
+.card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.btn-sm {
+    margin: 0 2px;
+}
