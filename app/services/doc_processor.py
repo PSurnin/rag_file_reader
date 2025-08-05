@@ -3,8 +3,7 @@ from fastapi import UploadFile, HTTPException
 import tempfile
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
-
-# WORK IN PROGRESS
+from pathlib import Path
 
 
 class DOCProcessor(DocumentProcessor):
@@ -46,21 +45,27 @@ class DOCProcessor(DocumentProcessor):
             from docx import Document
             import docx2txt
 
-            with tempfile.NamedTemporaryFile() as tmp:
+            # Создаем временный файл с автоматическим удалением
+            with tempfile.NamedTemporaryFile(
+                delete=False,
+                suffix='.docx',
+            ) as tmp:
                 tmp.write(content)
-                tmp.flush()
+                tmp_path = Path(tmp.name)
 
-                # Для DOCX файлов
-                if tmp.name.endswith('.docx'):
-                    doc = Document(tmp.name)
-                    text = '\n'.join(
-                        [paragraph.text for paragraph in doc.paragraphs]
-                    )
-                # Для DOC файлов (требует дополнительной библиотеки)
-                else:
-                    text = docx2txt.process(tmp.name)
+            # Для DOCX файлов
+            if tmp_path.suffix.lower() == '.docx':
+                doc = Document(str(tmp_path))
+                text = '\n'.join(
+                    [paragraph.text for paragraph in doc.paragraphs]
+                )
+            # Для DOC файлов
+            else:
+                text = docx2txt.process(str(tmp_path))
 
-                return text
+            tmp_path.unlink(missing_ok=True)
+
+            return text
 
         except ImportError:
             raise HTTPException(
