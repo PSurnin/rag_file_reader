@@ -26,6 +26,8 @@ async def summarize(
     request: Request,
     file: UploadFile = File(None),
     action: str = Form("generate"),
+    max_words: int = Form(150),
+    style: str = Form("formal"),
 ):
     try:
         if action == "generate" and file:
@@ -53,7 +55,11 @@ async def summarize(
         else:
             raise HTTPException(status_code=400, detail="Неверный запрос")
 
-        summary = model_manager.summarize(text)
+        summary = model_manager.summarize(
+            text,
+            max_words=max_words,
+            style=style,
+            )
 
         return templates.TemplateResponse("result.html", {
             "request": request,

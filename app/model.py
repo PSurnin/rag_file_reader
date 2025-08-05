@@ -81,17 +81,31 @@ class ModelManager:
         )
         return {k: v.to(self.device) for k, v in tokens.items()}
 
-    def summarize(self, text: str, max_new_tokens: int = 150) -> str:
+    def summarize(
+        self,
+        text: str,
+        max_words: int = 150,
+        style: str = "formal",
+    ) -> str:
         """Генерация краткого содержания"""
         if not self.is_loaded:
             self.load_model()
+
+        # Выбор стиля для промпта
+        style_prompts = {
+            "formal": "Create a formal and professional summary",
+            "casual": "Create a casual and conversational summary",
+            "technical": "Create a technical and detailed summary",
+        }
+
+        style_prompt = style_prompts.get(style, style_prompts["formal"])
 
         try:
             prompt = f"""
             <|system|>You are an assistant that creates concise
             and accurate document summaries.
             <|user|>Here is a document text.
-            Create a brief summary (1-2 paragraphs)
+            {style_prompt} (maximum of {max_words} words)
             that captures the main topic and key ideas.
             Use plain text format only, no markdown or HTML tags:
             {text}
@@ -102,7 +116,7 @@ class ModelManager:
             with torch.no_grad():
                 outputs = self.model.generate(
                     **inputs,
-                    max_new_tokens=max_new_tokens,
+                    max_new_tokens=max_words*3,
                     do_sample=True,
                     temperature=0.7,
                     top_p=0.9,

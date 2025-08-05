@@ -30,6 +30,33 @@
                                     Supported formats: PDF, TXT, DOC, DOCX (max 50MB)
                                 </div>
                             </div>
+                            
+                            <!-- Поле для выбора количества слов -->
+                            <div class="mb-3">
+                                <label for="max_words" class="form-label">Maximum words in summary:</label>
+                                <input type="number" 
+                                       class="form-control" 
+                                       id="max_words" 
+                                       name="max_words" 
+                                       min="50" 
+                                       max="500" 
+                                       value="150"
+                                       required>
+                                <div class="form-text">
+                                    Enter desired word count (50-500 words)
+                                </div>
+                            </div>
+                            
+                            <!-- Выпадающий список для выбора стиля -->
+                            <div class="mb-3">
+                                <label for="style" class="form-label">Communication style:</label>
+                                <select class="form-select" id="style" name="style" required>
+                                    <option value="formal" selected>Formal/Business</option>
+                                    <option value="casual">Casual/Conversational</option>
+                                    <option value="technical">Technical/Professional</option>
+                                </select>
+                            </div>
+                            
                             <div class="d-grid">
                                 <button type="submit" class="btn btn-primary btn-lg">
                                     Generate Summary
