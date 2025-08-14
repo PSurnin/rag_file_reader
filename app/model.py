@@ -36,7 +36,7 @@ class ModelManager:
 
             self.model = AutoModelForCausalLM.from_pretrained(
                 self.model_name,
-                cache_dir="../model_data/smolLM3",  # относительный путь
+                cache_dir="/model_data/smolLM3",  # относительный путь
                 quantization_config=bnb_config,
                 low_cpu_mem_usage=True,
                 torch_dtype=torch.float16,
@@ -44,7 +44,7 @@ class ModelManager:
 
             self.tokenizer = AutoTokenizer.from_pretrained(
                 self.model_name,
-                cache_dir="../model_data/smolLM3",
+                cache_dir="/model_data/smolLM3",
                 torch_dtype=torch.float16,  # экономия VRAM
             )
             self.device = next(self.model.parameters()).device
