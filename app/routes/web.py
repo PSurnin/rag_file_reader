@@ -1,3 +1,5 @@
+import uuid
+
 from fastapi import APIRouter, Request, UploadFile, File, HTTPException
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
@@ -18,12 +20,11 @@ async def upload_form(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 
-# TODO: Кэширование запросов для повторных запросов
 # TODO: Чат по итогу анализа, возвращаешь суммирование, но можно задать вопросы (после RAG)
 @router.post("/upload", response_class=HTMLResponse)
 async def upload_and_summarize(
     request: Request,
-    file: UploadFile = File(...),  # Обязательный параметр
+    file: UploadFile = File(...),
 ):
     """
     Загружает документ, извлекает текст и возвращает страницу с результатом
@@ -48,19 +49,30 @@ async def upload_and_summarize(
                 status_code=400,
                 detail="Не удалось извлечь текст из документа",
             )
+        session_id = str(uuid.uuid4())
 
         # Сохранение в сессию
-        request.session["document_text"] = text
-        log.info(f"Извлечен текст: {text[:150]}...")
+        redis_client = request.app.state.redis
+        await redis_client.set(session_id, text, ex=500)
 
         # Генерация ответа
         summary = model_manager.summarize(text)
 
-        return templates.TemplateResponse("result.html", {
+        response = templates.TemplateResponse("result.html", {
             "request": request,
             "summary": summary,
             "model_name": model_manager.model_name,
         })
+
+        response.set_cookie(
+            key="documentid",
+            value=session_id,
+            secure=False,
+            samesite="lax",
+            path="/",
+        )
+
+        return response
 
     except HTTPException:
         raise
@@ -76,7 +88,9 @@ async def regenerate_summary(request: Request):
     """
     try:
         # Получение текста из сессии
-        text = request.session.get("document_text")
+        document_id = request.cookies.get("documentid")
+        redis_client = request.app.state.redis
+        text = await redis_client.get(document_id)
         if not text:
             raise HTTPException(
                 status_code=400,

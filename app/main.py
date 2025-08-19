@@ -42,6 +42,7 @@ async def startup_event():
         log.error(f"Не удалось подключиться к Redis: {e}")
 
     try:
+        # TODO: Одно из решений загрузки модели - model server
         model_manager.load_model()
     except Exception as e:
         log.error(f"Ошибка запуска: {e}")

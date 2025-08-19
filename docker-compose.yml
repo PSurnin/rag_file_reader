@@ -8,7 +8,7 @@ services:
       - "8000:8000"
     volumes:
       - ./app:/src/app
-      - ../model_data:/model_data:ro
+      - ../model_data:/model_data
     deploy:
       resources:
         reservations:
