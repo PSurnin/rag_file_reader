@@ -19,7 +19,7 @@ class ModelManager:
         self.device = "cuda"
 
     def load_model(self):
-        """Ленивая загрузка модели с кэшированием"""
+        """Загрузка модели с кэшированием"""
         if self.is_loaded:
             return
 
@@ -36,17 +36,19 @@ class ModelManager:
 
             self.model = AutoModelForCausalLM.from_pretrained(
                 self.model_name,
-                cache_dir="../model_data/smolLM3",  # относительный путь
+                cache_dir="/model_data/smolLM3",
                 quantization_config=bnb_config,
                 low_cpu_mem_usage=True,
                 torch_dtype=torch.float16,
+                use_safetensors=True,
             ).to("cuda")
 
             self.tokenizer = AutoTokenizer.from_pretrained(
                 self.model_name,
-                cache_dir="../model_data/smolLM3",
-                torch_dtype=torch.float16,  # экономия VRAM
+                cache_dir="/model_data/smolLM3",
+                torch_dtype=torch.float16,
             )
+
             self.device = next(self.model.parameters()).device
             self.is_loaded = True
 

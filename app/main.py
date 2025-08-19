@@ -1,8 +1,11 @@
+import os
+import secrets
+from pathlib import Path
+
+import redis.asyncio as redis
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
-import secrets
-from pathlib import Path
 
 from .routes import web
 from .model import model_manager
@@ -25,7 +28,21 @@ app.include_router(web.router)
 
 @app.on_event("startup")
 async def startup_event():
+    # Инициализация redis
+    app.state.redis = redis.Redis(
+        host=os.getenv("REDIS_HOST", "redis"),
+        port=int(os.getenv("REDIS_PORT", 6379)),
+        decode_responses=True,
+    )
+    # Проверка подключения
     try:
+        await app.state.redis.ping()
+        log.info("Подключение к Redis установлено.")
+    except Exception as e:
+        log.error(f"Не удалось подключиться к Redis: {e}")
+
+    try:
+        # TODO: Одно из решений загрузки модели - model server
         model_manager.load_model()
     except Exception as e:
         log.error(f"Ошибка запуска: {e}")
@@ -35,4 +52,9 @@ async def startup_event():
 async def shutdown_event():
     """Выгрузка модели при остановке приложения"""
     model_manager.unload_model()
+    # Отключаем redis
+    if hasattr(app.state, 'redis') and app.state.redis:
+        await app.state.redis.close()
+        log.info("Подключение к Redis закрыто.")
+
     log.info("Приложение остановлено")

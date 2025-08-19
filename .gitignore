@@ -8,3 +8,9 @@ wheels/
 
 # Virtual environments
 .venv
+
+# ENV files
+.env
+
+# data dirs
+redis_data/
