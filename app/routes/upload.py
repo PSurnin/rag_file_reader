@@ -1,4 +1,5 @@
 import uuid
+from datetime import datetime
 
 from fastapi import APIRouter, Request, UploadFile, File, HTTPException
 from fastapi.responses import JSONResponse
@@ -7,6 +8,7 @@ from pathlib import Path
 
 from ..logger import log
 from ..services import get_processor, get_supported_types
+from ..schemas.redis_document import DocumentDTO
 
 router = APIRouter()
 templates = Jinja2Templates(
@@ -35,7 +37,7 @@ async def extract_document_text(file) -> str:
 
 
 @router.post("/upload", response_class=JSONResponse)
-async def upload_and_summarize(
+async def upload_and_extract(
     request: Request,
     file: UploadFile = File(...),
 ):
@@ -49,7 +51,7 @@ async def upload_and_summarize(
 
         # Валидация размера
         content_length = request.headers.get("content-length")
-        if content_length and int(content_length) > 50 * 1024 * 1024:  # 10MB
+        if content_length and int(content_length) > 10 * 1024 * 1024:  # 10MB
             raise HTTPException(status_code=400, detail="Файл слишком большой")
 
         text = await extract_document_text(file)
@@ -57,9 +59,28 @@ async def upload_and_summarize(
         # Сохранение в сессию
         redis_client = request.app.state.redis
         document_id = str(uuid.uuid4())
-        await redis_client.set(document_id, text, ex=500)
 
-        return JSONResponse({"document_id": document_id}, status_code=201)
+        now = datetime.utcnow()
+
+        doc = DocumentDTO(
+            document_id=document_id,
+            status="uploaded",
+            text=text,
+            result=None,
+            created_at=now,
+            updated_at=now
+        )
+        await redis_client.hset(
+            document_id,
+            mapping=doc.to_redis()
+        )
+        # Expire только после определения нагрузки
+        # await redis_client.expire(document_id, 600)
+
+        return JSONResponse(
+            {"document_id": document_id, "status": doc.status},
+            status_code=201,
+        )
 
     except HTTPException:
         raise
