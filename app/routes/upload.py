@@ -71,7 +71,7 @@ async def upload_and_extract(
             updated_at=now
         )
         await redis_client.hset(
-            document_id,
+            f'doc:{document_id}',
             mapping=doc.to_redis()
         )
         # Expire только после определения нагрузки

@@ -16,13 +16,13 @@ templates = Jinja2Templates(
 async def fake_processing(redis_client, document_id: str):
     # Имитация обработки celery task
     await asyncio.sleep(20)
-    raw = await redis_client.hgetall(document_id)
+    raw = await redis_client.hgetall(f'doc:{document_id}')
     doc = DocumentDTO.from_redis(document_id, raw)
     doc.status = "done"
     doc.result = "This is example summary text."
     # Записываем результат
     await redis_client.hset(
-        doc.document_id,
+        f'doc:{document_id}',
         mapping=doc.to_redis(),
     )
 
@@ -38,7 +38,7 @@ async def generate_summary(request: Request):
         raise HTTPException(status_code=400, detail="document_id обязателен")
 
     redis_client = request.app.state.redis
-    doc_data = await redis_client.hgetall(document_id)
+    doc_data = await redis_client.hgetall(f'doc:{document_id}')
     if not doc_data:
         raise HTTPException(status_code=404, detail="Документ не найден")
 
@@ -53,7 +53,7 @@ async def generate_summary(request: Request):
     # Ставим статус "processing"
     doc.status = "processing"
     doc.updated_at = datetime.utcnow()
-    await redis_client.hset(document_id, mapping=doc.to_redis())
+    await redis_client.hset(f'doc:{document_id}', mapping=doc.to_redis())
 
     # Имитация таски
     asyncio.create_task(fake_processing(redis_client, doc.document_id))
