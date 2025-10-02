@@ -11,5 +11,13 @@ templates = Jinja2Templates(
 
 @router.get("/", response_class=HTMLResponse)
 async def upload_form(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
-# TODO: Чат по итогу анализа, возвращаешь суммирование, но можно задать вопросы (после RAG)
+    return templates.TemplateResponse("main.html", {"request": request})
+
+
+@router.get("/documents", response_class=HTMLResponse)
+async def documents_page(request: Request):
+    """
+    Страница со списком документов и их статусами.
+    Данные подтягиваются из API /status через JS.
+    """
+    return templates.TemplateResponse("documents.html", {"request": request})

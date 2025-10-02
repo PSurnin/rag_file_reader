@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Document Status</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" 
+          rel="stylesheet" 
+          integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" 
+          crossorigin="anonymous">
+    <link href="/static/css/upload.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="text-center">Documents Status</h2>
+                    <p class="text-center text-muted">Here you can track all uploaded documents</p>
+                </div>
+                <div class="card-body">
+                    <table class="table table-striped" id="documents-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Status</th>
+                                <th>Created At</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- данные будут подставляться через JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+async function fetchDocuments() {
+    try {
+        const response = await fetch("/status");
+        const data = await response.json();
+        const tbody = document.querySelector("#documents-table tbody");
+        tbody.innerHTML = "";
+
+        data.documents.forEach(doc => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${doc.document_id}</td>
+                <td>${doc.status}</td>
+                <td>${doc.created_at || ""}</td>
+                <td>
+                    <a href="/documents/${doc.document_id}" class="btn btn-sm btn-primary">View Result</a>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    } catch (err) {
+        console.error("Failed to fetch documents:", err);
+    }
+}
+
+// обновление каждые 5 секунд
+setInterval(fetchDocuments, 5000);
+
+// первый вызов при загрузке страницы
+window.onload = fetchDocuments;
+</script>
+</body>
+</html>

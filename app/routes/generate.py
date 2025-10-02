@@ -52,7 +52,7 @@ async def generate_summary(request: Request):
 
     # Ставим статус "processing"
     doc.status = "processing"
-    doc.updated_ay = datetime.utcnow()
+    doc.updated_at = datetime.utcnow()
     await redis_client.hset(document_id, mapping=doc.to_redis())
 
     # Имитация таски
