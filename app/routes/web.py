@@ -21,3 +21,13 @@ async def documents_page(request: Request):
     Данные подтягиваются из API /status через JS.
     """
     return templates.TemplateResponse("documents.html", {"request": request})
+
+
+@router.get("/documents/{doc_id}", response_class=HTMLResponse)
+async def results_page(request: Request, doc_id: str):
+    """
+    Страница со списком документов и их статусами.
+    Данные подтягиваются из API /status через JS.
+    """
+    return templates.TemplateResponse("results.html", {"request": request})
+

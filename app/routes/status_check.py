@@ -14,11 +14,10 @@ async def check_status(request: Request):
     redis_client = request.app.state.redis
 
     documents = []
-    async for key in redis_client.scan_iter("*"):
+    async for key in redis_client.scan_iter("doc:*"):
         status, created_at = await redis_client.hmget(
             key,
-            "status",
-            "created_at",
+            ["status", "created_at"],
         )
         documents.append({
             "document_id": key,
