@@ -7,7 +7,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
 
-from .routes import web
+from .routes import web, upload, generate, status_check
 from .model import model_manager
 from .logger import log
 
@@ -15,6 +15,7 @@ from .logger import log
 
 BASE_DIR = Path(__file__).parent
 
+redis_url = os.getenv("REDIS_URL", "redis://redis:6379/0")
 app = FastAPI()
 
 app.add_middleware(
@@ -24,16 +25,15 @@ app.add_middleware(
 
 app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 app.include_router(web.router)
+app.include_router(upload.router)
+app.include_router(generate.router)
+app.include_router(status_check.router)
 
 
 @app.on_event("startup")
 async def startup_event():
     # Инициализация redis
-    app.state.redis = redis.Redis(
-        host=os.getenv("REDIS_HOST", "redis"),
-        port=int(os.getenv("REDIS_PORT", 6379)),
-        decode_responses=True,
-    )
+    app.state.redis = redis.from_url(redis_url, decode_responses=True)
     # Проверка подключения
     try:
         await app.state.redis.ping()
@@ -41,11 +41,11 @@ async def startup_event():
     except Exception as e:
         log.error(f"Не удалось подключиться к Redis: {e}")
 
-    try:
-        # TODO: Одно из решений загрузки модели - model server
-        model_manager.load_model()
-    except Exception as e:
-        log.error(f"Ошибка запуска: {e}")
+    # try:
+    #     # TODO: Одно из решений загрузки модели - model server
+    #     model_manager.load_model()
+    # except Exception as e:
+    #     log.error(f"Ошибка запуска: {e}")
 
 
 @app.on_event("shutdown")

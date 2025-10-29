@@ -17,12 +17,11 @@ services:
               count: 1
               capabilities: [gpu]
     restart: unless-stopped
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     depends_on: 
       - redis
     environment:
-      - REDIS_HOST=${REDIS_HOST}
-      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_URL=${REDIS_URL}
 
   redis:
     image: redis:latest
