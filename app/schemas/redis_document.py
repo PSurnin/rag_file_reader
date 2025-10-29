@@ -19,6 +19,10 @@ class DocumentDTO(BaseModel):
     created_at: datetime
     updated_at: datetime
 
+    def dict_items(self):
+        """Возвращает поля как итератор пар (ключ, значение)"""
+        return self.dict().items()
+
     @classmethod
     def from_redis(cls, document_id: str, data: dict):
         """Собираем DTO из Redis словаря"""
