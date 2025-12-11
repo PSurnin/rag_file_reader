@@ -5,7 +5,7 @@ from pathlib import Path
 
 router = APIRouter()
 templates = Jinja2Templates(
-    directory=Path(__file__).parent.parent / "templates"
+    directory=Path(__file__).parent.parent.parent / "templates"
 )
 
 

@@ -7,7 +7,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./app:/src/app
+      - ./src:/app/src
       - ../model_data:/model_data
     deploy:
       resources:
@@ -17,8 +17,8 @@ services:
               count: 1
               capabilities: [gpu]
     restart: unless-stopped
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-    depends_on: 
+    command: uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+    depends_on:
       - redis
     environment:
       - REDIS_URL=${REDIS_URL}

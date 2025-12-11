@@ -1,5 +1,5 @@
 from typing import Dict, Optional
-from .processor import DocumentProcessor
+from src.app.services.processor import DocumentProcessor
 
 # TODO: doc/docx support
 

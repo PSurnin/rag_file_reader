@@ -1,4 +1,4 @@
-from .processor import DocumentProcessor
+from src.app.services.processor import DocumentProcessor
 from fastapi import UploadFile, HTTPException
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
