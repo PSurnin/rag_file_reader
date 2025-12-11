@@ -17,12 +17,12 @@ RUN uv pip install --system --compile-bytecode \
     transformers>=4.53.2
 
 FROM builder-image as dev
-WORKDIR /src/
+WORKDIR /app
 
 COPY pyproject.toml ./
 RUN uv pip install --system --compile-bytecode \
     --extra-index-url https://pypi.org/simple/ \
     .
 
-COPY ./app ./app
+COPY ./src ./src
 EXPOSE 8000

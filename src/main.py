@@ -7,11 +7,9 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
 
-from .routes import web, upload, generate, status_check
-from .model import model_manager
-from .logger import log
-
-# TODO: Redis + FAISS + Docker deploy
+from src.app.routes import web, upload, generate, status_check
+from src.app.ai_model import model_manager
+from src.logger import log
 
 BASE_DIR = Path(__file__).parent
 

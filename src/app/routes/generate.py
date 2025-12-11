@@ -5,7 +5,7 @@ from fastapi import APIRouter, Request, HTTPException
 from fastapi.responses import JSONResponse
 from fastapi.templating import Jinja2Templates
 from pathlib import Path
-from ..schemas.redis_document import DocumentDTO
+from src.app.schemas import DocumentDTO
 
 router = APIRouter()
 templates = Jinja2Templates(

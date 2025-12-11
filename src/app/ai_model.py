@@ -4,7 +4,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 import torch
 import gc
 
-from .logger import log
+from src.logger import log
 
 # TODO: Настройка параметров генерации - длина ответа и стиль
 # TODO: RAG + FAISS
