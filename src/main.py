@@ -8,7 +8,6 @@ from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
 
 from src.app.routes import web, upload, generate, status_check
-from src.app.ai_model import model_manager
 from src.logger import log
 
 BASE_DIR = Path(__file__).parent
@@ -39,17 +38,9 @@ async def startup_event():
     except Exception as e:
         log.error(f"Не удалось подключиться к Redis: {e}")
 
-    # try:
-    #     # TODO: Одно из решений загрузки модели - model server
-    #     model_manager.load_model()
-    # except Exception as e:
-    #     log.error(f"Ошибка запуска: {e}")
-
 
 @app.on_event("shutdown")
 async def shutdown_event():
-    """Выгрузка модели при остановке приложения"""
-    model_manager.unload_model()
     # Отключаем redis
     if hasattr(app.state, 'redis') and app.state.redis:
         await app.state.redis.close()
