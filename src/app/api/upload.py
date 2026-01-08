@@ -6,9 +6,9 @@ from fastapi.responses import JSONResponse
 from fastapi.templating import Jinja2Templates
 from pathlib import Path
 
-from src.logger import log
+from src.app.core.logger import log
 from src.app.services import get_processor, get_supported_types
-from src.app.schemas import DocumentDTO
+from src.app.core.schemas import DocumentDTO
 
 router = APIRouter()
 templates = Jinja2Templates(

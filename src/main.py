@@ -5,28 +5,30 @@ from pathlib import Path
 import redis.asyncio as redis
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
+
 from starlette.middleware.sessions import SessionMiddleware
 
-from src.app.routes import web, upload, generate, status_check
-from src.logger import log
+from src.app.api import router
+from src.app.core.logger import log
 
 BASE_DIR = Path(__file__).parent
 
 redis_url = os.getenv("REDIS_URL", "redis://redis:6379/0")
 app = FastAPI()
 
+
+# Middleware
 app.add_middleware(
     SessionMiddleware,
     secret_key=secrets.token_urlsafe(32)
 )
 
+# Routers
 app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
-app.include_router(web.router)
-app.include_router(upload.router)
-app.include_router(generate.router)
-app.include_router(status_check.router)
+app.include_router(router)
 
 
+# Lifespan events
 @app.on_event("startup")
 async def startup_event():
     # Инициализация redis
